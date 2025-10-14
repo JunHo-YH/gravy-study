@@ -1,8 +1,10 @@
 package kr.gravy.gravystudy.auth.jwt;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import kr.gravy.gravystudy.auth.entity.User;
 import kr.gravy.gravystudy.configuration.properties.JwtProperties;
 import org.springframework.stereotype.Component;
 
@@ -11,7 +13,6 @@ import java.security.Key;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Date;
-import java.util.UUID;
 
 @Component
 public class JWTUtil {
@@ -25,19 +26,20 @@ public class JWTUtil {
         this.key = Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtProperties.secret()));
     }
 
-    public String createAccessToken(UUID userPublicId) {
-        return createToken(userPublicId, ACCESS_TOKEN_EXPIRATION);
+    public String createAccessToken(User user) {
+        return createToken(user, ACCESS_TOKEN_EXPIRATION);
     }
 
-    public String createRefreshToken(UUID userPublicId) {
-        return createToken(userPublicId, REFRESH_TOKEN_EXPIRATION);
+    public String createRefreshToken(User user) {
+        return createToken(user, REFRESH_TOKEN_EXPIRATION);
     }
 
-    private String createToken(UUID userPublicId, Duration duration) {
+    private String createToken(User user, Duration duration) {
         Instant now = Instant.now();
 
         return Jwts.builder()
-                .subject(userPublicId.toString())
+                .subject(user.getPublicId().toString())
+                .claim("grade", user.getGrade().name())
                 .issuer("Gravy")
                 .issuedAt(Date.from(now))
                 .expiration(Date.from(now.plus(duration)))
@@ -54,13 +56,12 @@ public class JWTUtil {
                 .getExpiration();
     }
 
-    public UUID validateAndGetSubjectAsUUID(String token) {
-        String sub = Jwts.parser()
+    public Claims validateAndGetClaims(String token) {
+        return Jwts.parser()
                 .verifyWith((SecretKey) key)
                 .build()
                 .parseSignedClaims(token)
-                .getPayload()
-                .getSubject();
-        return UUID.fromString(sub);
+                .getPayload();
+
     }
 }

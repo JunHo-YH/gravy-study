@@ -32,9 +32,8 @@ public enum Status {
     USER_NOT_FOUND(404, "user001", "사용자를 찾을 수 없습니다"),
 
     // === 경매 관련 ===
-    AUCTION_START_TIME_TOO_EARLY(400, "auction001", "경매 시작 시간은 현재 시간보다 3분 이후여야 합니다"),
-    AUCTION_END_TIME_TOO_EARLY(400, "auction002", "경매 종료 시간은 현재 시간보다 최소 1시간 이후여야 합니다"),
-    AUCTION_TIME_RANGE_INVALID(400, "auction003", "경매 종료 시간은 시작 시간보다 늦어야 합니다"),
+    INVALID_AUCTION_START_TIME(400, "auction001", "경매 시작 시간은 현재 시간 이후여야 합니다"),
+    INVALID_AUCTION_END_TIME(400, "auction002", "경매 종료 시간은 시작 시간보다 늦어야 합니다"),
 
     // === 검증 관련 ===
     VALIDATION_FAILED(400, "valid001", "입력값 검증에 실패했습니다");

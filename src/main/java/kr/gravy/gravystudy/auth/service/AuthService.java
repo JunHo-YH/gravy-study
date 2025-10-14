@@ -26,7 +26,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.Objects;
-import java.util.UUID;
 
 @Slf4j
 @Service
@@ -72,9 +71,8 @@ public class AuthService {
 
         user.validatePassword(passwordEncoder, request.password());
 
-        UUID userPublicId = user.getPublicId();
-        String accessToken = jwtUtil.createAccessToken(userPublicId);
-        String refreshToken = jwtUtil.createRefreshToken(userPublicId);
+        String accessToken = jwtUtil.createAccessToken(user);
+        String refreshToken = jwtUtil.createRefreshToken(user);
 
         final LocalDateTime now = LocalDateTime.now();
         Date refreshTokenExpiredDate = jwtUtil.getExpiration(refreshToken);
@@ -102,8 +100,8 @@ public class AuthService {
                 .orElseThrow(() -> new GravyException(Status.USER_NOT_FOUND));
 
         final LocalDateTime now = LocalDateTime.now();
-        String accessToken = jwtUtil.createAccessToken(user.getPublicId());
-        String refreshToken = jwtUtil.createRefreshToken(user.getPublicId());
+        String accessToken = jwtUtil.createAccessToken(user);
+        String refreshToken = jwtUtil.createRefreshToken(user);
 
         Date refreshTokenExpiredDate = jwtUtil.getExpiration(refreshToken);
         LocalDateTime refreshTokenExpiredAt = DateTimeUtil.convertToLocalDateTime(refreshTokenExpiredDate);
