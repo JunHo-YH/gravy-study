@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.gravy.gravystudy.auction.mapper.AuctionMapper">
+
+    <resultMap id="AuctionMap" type="kr.gravy.gravystudy.auction.entity.Auction">
+        <id property="id" column="id" javaType="java.lang.Long"/>
+        <result property="sellerId" column="seller_id" javaType="java.lang.Long"/>
+        <result property="title" column="title" javaType="java.lang.String"/>
+        <result property="description" column="description" javaType="java.lang.String"/>
+        <result property="category" column="category" javaType="kr.gravy.gravystudy.auction.model.Category"/>
+        <result property="startingPrice" column="starting_price" javaType="java.lang.Long"/>
+        <result property="minBidIncrement" column="min_bid_increment" javaType="java.lang.Long"/>
+        <result property="auctionStartTime" column="auction_start_time" javaType="java.time.LocalDateTime"/>
+        <result property="auctionEndTime" column="auction_end_time" javaType="java.time.LocalDateTime"/>
+        <result property="createdAt" column="created_at" javaType="java.time.LocalDateTime"/>
+    </resultMap>
+
+    <select id="getAuctionById" resultMap="AuctionMap">
+        SELECT *
+        FROM auction
+        WHERE id = #{id}
+    </select>
+
+    <insert id="insertAuction" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO auction(seller_id, title, description, category, starting_price, min_bid_increment,
+                            auction_start_time, auction_end_time, created_at)
+        VALUES (#{sellerId}, #{title}, #{description}, #{category}, #{startingPrice}, #{minBidIncrement},
+                #{auctionStartTime}, #{auctionEndTime}, #{createdAt})
+    </insert>
+</mapper>

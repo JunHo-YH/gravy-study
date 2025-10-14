@@ -15,8 +15,6 @@ public interface UserMapper {
 
     boolean existsAlreadyEmail(@Param("email") String email);
 
-    Optional<Grade> getUserGradeByPublicId(@Param("publicId") UUID userPublicId);
-
     Optional<User> getUserByRefreshToken(@Param("refreshToken") String refreshToken);
 
     Optional<User> getUserByPublicId(@Param("publicId") UUID userPublicId);
