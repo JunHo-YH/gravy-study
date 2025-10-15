@@ -1,6 +1,8 @@
 package kr.gravy.gravystudy.auction.entity;
 
 import kr.gravy.gravystudy.auction.model.Category;
+import kr.gravy.gravystudy.common.exception.GravyException;
+import kr.gravy.gravystudy.common.exception.Status;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -54,6 +56,7 @@ public class Auction {
             LocalDateTime auctionEndTime,
             LocalDateTime createdAt
     ) {
+        validateAuctionTime(auctionStartTime, auctionEndTime, createdAt);
         return new Auction(
                 sellerId,
                 title,
@@ -65,5 +68,15 @@ public class Auction {
                 auctionEndTime,
                 createdAt
         );
+    }
+
+    private static void validateAuctionTime(LocalDateTime startTime, LocalDateTime endTime, LocalDateTime createdAt) {
+        if (startTime.isBefore(createdAt)) {
+            throw new GravyException(Status.INVALID_AUCTION_START_TIME);
+        }
+
+        if (endTime.isBefore(startTime) || endTime.isEqual(startTime)) {
+            throw new GravyException(Status.INVALID_AUCTION_END_TIME);
+        }
     }
 }

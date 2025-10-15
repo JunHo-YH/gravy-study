@@ -19,13 +19,13 @@
 
     <select id="getAuctionById" resultMap="AuctionMap">
         SELECT *
-        FROM auction
+        FROM auctions
         WHERE id = #{id}
     </select>
 
     <insert id="insertAuction" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO auction(seller_id, title, description, category, starting_price, min_bid_increment,
-                            auction_start_time, auction_end_time, created_at)
+        INSERT INTO auctions(seller_id, title, description, category, starting_price, min_bid_increment,
+                             auction_start_time, auction_end_time, created_at)
         VALUES (#{sellerId}, #{title}, #{description}, #{category}, #{startingPrice}, #{minBidIncrement},
                 #{auctionStartTime}, #{auctionEndTime}, #{createdAt})
     </insert>

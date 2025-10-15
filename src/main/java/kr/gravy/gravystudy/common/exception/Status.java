@@ -35,6 +35,12 @@ public enum Status {
     INVALID_AUCTION_START_TIME(400, "auction001", "경매 시작 시간은 현재 시간 이후여야 합니다"),
     INVALID_AUCTION_END_TIME(400, "auction002", "경매 종료 시간은 시작 시간보다 늦어야 합니다"),
 
+    // === S3 관련 ===
+    S3_UPLOAD_FAILED(500, "s3001", "S3 업로드에 실패했습니다"),
+    TOO_MANY_IMAGES(400, "s3002", "업로드 가능한 이미지 수를 초과했습니다."),
+    FILE_READ_FAILED(500, "file001", "파일 읽기에 실패했습니다"),
+    FILE_TOO_LARGE(400, "file002", "파일 크기가 10MB를 초과할 수 없습니다."),
+
     // === 검증 관련 ===
     VALIDATION_FAILED(400, "valid001", "입력값 검증에 실패했습니다");
 

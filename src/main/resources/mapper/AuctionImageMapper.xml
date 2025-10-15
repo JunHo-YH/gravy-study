@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.gravy.gravystudy.auction.mapper.AuctionImageMapper">
+
+    <resultMap id="AuctionImageMap" type="kr.gravy.gravystudy.auction.entity.AuctionImage">
+        <id property="id" column="id" javaType="java.lang.Long"/>
+        <result property="auctionId" column="auction_id" javaType="java.lang.Long"/>
+        <result property="imageUrl" column="image_url" javaType="java.lang.String"/>
+        <result property="displayOrder" column="display_order" javaType="int"/>
+        <result property="createdAt" column="created_at" javaType="java.time.LocalDateTime"/>
+    </resultMap>
+
+    <insert id="insertAuctionImage" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO auction_images(auction_id, image_url, display_order, created_at)
+        VALUES (#{auctionId}, #{imageUrl}, #{displayOrder}, #{createdAt})
+    </insert>
+</mapper>

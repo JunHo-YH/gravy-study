@@ -7,6 +7,7 @@ import kr.gravy.gravystudy.auction.model.Category;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 public class AuctionRegistrationDto {
@@ -31,7 +32,8 @@ public class AuctionRegistrationDto {
             Long minBidIncrement,
             LocalDateTime auctionStartTime,
             LocalDateTime auctionEndTime,
-            LocalDateTime createdAt
+            LocalDateTime createdAt,
+            List<String> imageUrls
     ) {
     }
 }
