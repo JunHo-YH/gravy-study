@@ -5,12 +5,15 @@ import jakarta.servlet.http.HttpServletRequest;
 import kr.gravy.gravystudy.configuration.properties.GravyProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.tomcat.util.http.fileupload.impl.FileCountLimitExceededException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.multipart.MultipartException;
 
 import java.net.URI;
 import java.util.HashMap;
@@ -62,4 +65,29 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.badRequest().body(problemDetail);
     }
+
+    @ExceptionHandler(MultipartException.class)
+    public ResponseEntity<ProblemDetail> handleMultipartException(MultipartException e, HttpServletRequest request) {
+        log.error("MultipartException: {}", e.getMessage());
+
+        // 파일 개수 초과 체크
+        if (e.getCause() instanceof FileCountLimitExceededException) {
+            ProblemDetail problemDetail = TOO_MANY_IMAGES.toProblemDetail(URI.create(request.getRequestURI()));
+            return ResponseEntity.badRequest().body(problemDetail);
+        }
+
+        // 기타 multipart 에러 (파일 크기 초과 등)
+        log.warn("처리되지 않은 MultipartException: {}", e.getClass().getSimpleName());
+
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST,
+                "파일 업로드 처리 중 오류가 발생했습니다."
+        );
+        problemDetail.setType(URI.create(gravyProperties.baseUrl() + "/errors/multipart"));
+        problemDetail.setInstance(URI.create(request.getRequestURI()));
+        problemDetail.setProperty("code", "multipart001");
+        problemDetail.setProperty("timestamp", java.time.LocalDateTime.now());
+
+        return ResponseEntity.badRequest().body(problemDetail);
+    }
+
 }

@@ -8,7 +8,8 @@ import org.springframework.context.annotation.Configuration;
         GravyProperties.class,
         CorsProperties.class,
         JwtProperties.class,
-        MailProperties.class
+        MailProperties.class,
+        S3Properties.class
 })
 public class PropertiesConfiguration {
 }

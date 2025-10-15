@@ -1,15 +1,13 @@
 package kr.gravy.gravystudy.auth.jwt;
 
+import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import kr.gravy.gravystudy.auth.mapper.UserMapper;
 import kr.gravy.gravystudy.auth.model.Grade;
 import kr.gravy.gravystudy.auth.utils.CookieUtil;
-import kr.gravy.gravystudy.common.exception.GravyException;
-import kr.gravy.gravystudy.common.exception.Status;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -29,8 +27,6 @@ import java.util.UUID;
 public class JWTAuthenticationFilter extends OncePerRequestFilter {
 
     private final JWTUtil jwtUtil;
-    private final UserMapper userMapper;
-
 
     @Override
     protected void doFilterInternal(HttpServletRequest req, HttpServletResponse res, FilterChain chain)
@@ -51,9 +47,15 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
         }
 
         try {
-            UUID userPublicId = jwtUtil.validateAndGetSubjectAsUUID(token);
-            Grade grade = userMapper.getUserGradeByPublicId(userPublicId)
-                    .orElseThrow(() -> new GravyException(Status.USER_NOT_FOUND));
+            Claims claims = jwtUtil.validateAndGetClaims(token);
+
+            /** TODO:: 프로젝트에서 코드 제거 (JWT 장점 극대화)
+             * User user = userMapper.getUserByPublicId(userPublicId)
+             *                     .orElseThrow(() -> new GravyException(Status.USER_NOT_FOUND));
+             */
+
+            UUID userPublicId = UUID.fromString(claims.getSubject());
+            Grade grade = Grade.valueOf(claims.get("grade", String.class));
 
             List<SimpleGrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ROLE_" + grade.name()));
 
