@@ -16,4 +16,14 @@
         INSERT INTO auction_images(auction_id, image_url, display_order, created_at)
         VALUES (#{auctionId}, #{imageUrl}, #{displayOrder}, #{createdAt})
     </insert>
+
+    <select id="findFirstImagesByAuctionIdList" resultType="kr.gravy.gravystudy.auction.dto.AuctionThumbnail">
+        SELECT auction_id, image_url
+        FROM auction_images
+        WHERE auction_id IN
+        <foreach collection="auctionIdList" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+        AND display_order = 0
+    </select>
 </mapper>

@@ -1,6 +1,8 @@
 package kr.gravy.gravystudy.auction.service;
 
+import kr.gravy.gravystudy.auction.dto.AuctionListDto;
 import kr.gravy.gravystudy.auction.dto.AuctionRegistrationDto;
+import kr.gravy.gravystudy.auction.dto.AuctionThumbnail;
 import kr.gravy.gravystudy.auction.entity.Auction;
 import kr.gravy.gravystudy.auction.entity.AuctionImage;
 import kr.gravy.gravystudy.auction.mapper.AuctionImageMapper;
@@ -16,6 +18,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -106,5 +110,41 @@ public class AuctionService {
                 log.error("S3 롤백 실패 (수동 처리 필요): {}", imageUrl, e);
             }
         }
+    }
+
+    @Transactional(readOnly = true)
+    public AuctionListDto.Response getAuctions(int page, int size) {
+        int offset = calculateOffset(page, size);
+
+        List<Auction> auctions = auctionMapper.findAuctionsWithPagination(offset, size);
+        long totalCount = auctionMapper.countTotalAuctions();
+
+        if (auctions.isEmpty()) {
+            return new AuctionListDto.Response(LocalDateTime.now(), List.of(), totalCount, page, size);
+        }
+
+        List<Long> auctionIdList = auctions.stream()
+                .map(Auction::getId)
+                .toList();
+
+        Map<Long, String> thumbnailMap = auctionImageMapper
+                .findFirstImagesByAuctionIdList(auctionIdList).stream()
+                .collect(Collectors.toMap(
+                        AuctionThumbnail::auctionId,
+                        AuctionThumbnail::imageUrl
+                ));
+
+        List<AuctionListDto.AuctionItem> auctionItems = auctions.stream()
+                .map(auction -> {
+                    String thumbnailUrl = thumbnailMap.get(auction.getId());
+                    return AuctionListDto.AuctionItem.from(auction, thumbnailUrl);
+                })
+                .toList();
+
+        return new AuctionListDto.Response(LocalDateTime.now(), auctionItems, totalCount, page, size);
+    }
+
+    private int calculateOffset(int page, int size) {
+        return (page - 1) * size;
     }
 }
