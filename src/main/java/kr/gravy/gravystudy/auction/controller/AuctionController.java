@@ -1,6 +1,7 @@
 package kr.gravy.gravystudy.auction.controller;
 
 import jakarta.validation.Valid;
+import kr.gravy.gravystudy.auction.dto.AuctionListDto;
 import kr.gravy.gravystudy.auction.dto.AuctionRegistrationDto;
 import kr.gravy.gravystudy.auction.service.AuctionService;
 import kr.gravy.gravystudy.auth.entity.User;
@@ -10,10 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -31,5 +29,12 @@ public class AuctionController {
             @Valid @ModelAttribute AuctionRegistrationDto.Request request,
             @RequestPart(value = "image", required = false) List<MultipartFile> images) {
         return ResponseEntity.status(HttpStatus.CREATED).body(auctionService.registerAuction(user, request, images));
+    }
+
+    @GetMapping("/api/v1/auctions")
+    public ResponseEntity<AuctionListDto.Response> getAuctions(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "8") int size) {
+        return ResponseEntity.ok(auctionService.getAuctions(page, size));
     }
 }
